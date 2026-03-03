@@ -1,0 +1,819 @@
+/* ── Reset & Variables ────────────────────────────────────── */
+:root {
+  --bg-primary: #0f0f14;
+  --bg-secondary: #16161e;
+  --bg-sidebar: #12121a;
+  --bg-input: #1a1a26;
+  --bg-message-user: #1e3a5f;
+  --bg-message-assistant: #1a1a26;
+  --text-primary: #e4e4e8;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --accent: #6366f1;
+  --accent-hover: #818cf8;
+  --border: #2a2a3a;
+  --success: #22c55e;
+  --danger: #ef4444;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+#root {
+  max-width: unset;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+
+html, body, #root {
+  height: 100%;
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* ── App Layout ──────────────────────────────────────────── */
+.app {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────── */
+.sidebar {
+  width: 260px;
+  min-width: 260px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+}
+
+.sidebar-header {
+  margin-bottom: 32px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-icon {
+  font-size: 28px;
+}
+
+.logo h1 {
+  font-size: 20px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tagline {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  padding-left: 38px;
+}
+
+.sidebar-agents {
+  flex: 1;
+}
+
+.sidebar-agents h3 {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.sidebar-agents ul {
+  list-style: none;
+}
+
+.sidebar-agents li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--text-secondary);
+  transition: background 0.2s;
+}
+
+.sidebar-agents li:hover {
+  background: rgba(99, 102, 241, 0.08);
+}
+
+.agent-icon {
+  font-size: 16px;
+}
+
+.sidebar-footer {
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
+.sidebar-footer p {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.btn-demo-sidebar {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px dashed var(--accent);
+  border-radius: var(--radius-sm);
+  color: var(--accent-hover);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-demo-sidebar:hover {
+  background: rgba(99, 102, 241, 0.2);
+}
+
+/* ── Main Area ───────────────────────────────────────────── */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Messages ────────────────────────────────────────────── */
+.messages-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px 24px;
+  scroll-behavior: smooth;
+}
+
+.messages-area::-webkit-scrollbar {
+  width: 6px;
+}
+
+.messages-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.messages-area::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+/* ── Welcome Screen ──────────────────────────────────────── */
+.welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+  animation: fadeIn 0.5s ease;
+}
+
+.welcome-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+
+.welcome h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, var(--accent), #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.welcome > p {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+.example-queries {
+  width: 100%;
+}
+
+.example-queries h4 {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.example-queries button {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s;
+}
+
+.example-queries button:hover {
+  border-color: var(--accent);
+  background: rgba(99, 102, 241, 0.08);
+}
+
+.demo-section {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.btn-demo {
+  display: block;
+  width: 100%;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(167, 139, 250, 0.15));
+  border: 1px dashed var(--accent);
+  border-radius: var(--radius-sm);
+  color: var(--accent-hover);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-demo:hover {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(167, 139, 250, 0.25));
+  border-color: var(--accent-hover);
+}
+
+/* ── Message Bubbles ─────────────────────────────────────── */
+.message {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 24px;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  animation: slideUp 0.3s ease;
+}
+
+.message-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+}
+
+.message-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.message.user .message-content {
+  background: var(--bg-message-user);
+  border-radius: var(--radius) var(--radius) var(--radius) 4px;
+  padding: 14px 18px;
+}
+
+.user-text {
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.message.assistant .message-content {
+  background: var(--bg-message-assistant);
+  border: 1px solid var(--border);
+  border-radius: 4px var(--radius) var(--radius) var(--radius);
+  padding: 20px 24px;
+}
+
+/* ── Markdown Rendering ──────────────────────────────────── */
+.markdown-body {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-primary);
+}
+
+.markdown-body h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 24px 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--accent);
+}
+
+.markdown-body h1:first-child {
+  margin-top: 0;
+}
+
+.markdown-body h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 20px 0 10px;
+  color: var(--accent-hover);
+}
+
+.markdown-body h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 16px 0 8px;
+}
+
+.markdown-body h4 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 12px 0 6px;
+}
+
+.markdown-body p {
+  margin: 8px 0;
+}
+
+.markdown-body ul, .markdown-body ol {
+  margin: 8px 0;
+  padding-left: 24px;
+}
+
+.markdown-body li {
+  margin: 4px 0;
+}
+
+.markdown-body strong {
+  color: #f0f0f4;
+}
+
+.markdown-body code {
+  background: rgba(99, 102, 241, 0.15);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+}
+
+.markdown-body pre {
+  background: #0d0d12;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  overflow-x: auto;
+  margin: 12px 0;
+}
+
+.markdown-body pre code {
+  background: none;
+  padding: 0;
+  font-size: 13px;
+}
+
+.markdown-body blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 8px 16px;
+  margin: 12px 0;
+  background: rgba(99, 102, 241, 0.05);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--text-secondary);
+}
+
+.markdown-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 13px;
+}
+
+.markdown-body th {
+  background: rgba(99, 102, 241, 0.1);
+  font-weight: 600;
+  text-align: left;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+}
+
+.markdown-body td {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+}
+
+.markdown-body tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.markdown-body a {
+  color: var(--accent-hover);
+  text-decoration: none;
+}
+
+.markdown-body a:hover {
+  text-decoration: underline;
+}
+
+.markdown-body hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 16px 0;
+}
+
+/* ── Message Actions (Download / Copy) ───────────────────── */
+.message-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.btn-download, .btn-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-download:hover {
+  border-color: var(--accent);
+  color: var(--accent-hover);
+  background: rgba(99, 102, 241, 0.08);
+}
+
+.btn-copy:hover {
+  border-color: var(--success);
+  color: var(--success);
+  background: rgba(34, 197, 94, 0.08);
+}
+
+/* ── Loading Indicator ───────────────────────────────────── */
+.loading-indicator {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.loading-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--accent-hover);
+}
+
+.loading-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ── Data Sources Grid ───────────────────────────────────── */
+.data-sources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.source-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 12px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--border);
+  background: rgba(99, 102, 241, 0.05);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.source-item.pending {
+  opacity: 0.5;
+  border-color: var(--text-muted);
+}
+
+.source-item.active {
+  border-color: var(--accent);
+  background: rgba(99, 102, 241, 0.15);
+  box-shadow: 0 0 16px rgba(99, 102, 241, 0.3);
+}
+
+.source-item.completed {
+  border-color: var(--success);
+  background: rgba(34, 197, 94, 0.1);
+  opacity: 0.8;
+}
+
+.source-icon {
+  font-size: 32px;
+}
+
+.source-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.source-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.activity-dots {
+  display: flex;
+  gap: 3px;
+}
+
+.activity-dots span {
+  width: 5px;
+  height: 5px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.activity-dots span:nth-child(1) { animation-delay: -0.32s; }
+.activity-dots span:nth-child(2) { animation-delay: -0.16s; }
+.activity-dots span:nth-child(3) { animation-delay: 0; }
+
+.checkmark {
+  font-size: 16px;
+  color: var(--success);
+  font-weight: 700;
+}
+
+.loading-message {
+  width: 100%;
+  text-align: center;
+  padding: 12px;
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.loading-message p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+  font-style: italic;
+}
+
+.loading-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.loading-dots span {
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+.loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+.loading-dots span:nth-child(3) { animation-delay: 0; }
+
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+/* ── Input Area ──────────────────────────────────────────── */
+.input-area {
+  padding: 16px 24px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-secondary);
+}
+
+.input-wrapper {
+  display: flex;
+  gap: 10px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.input-wrapper input {
+  flex: 1;
+  padding: 14px 18px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input-wrapper input:focus {
+  border-color: var(--accent);
+}
+
+.input-wrapper input::placeholder {
+  color: var(--text-muted);
+}
+
+.input-wrapper input:disabled {
+  opacity: 0.5;
+}
+
+.input-wrapper button {
+  padding: 14px 24px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.input-wrapper button:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.input-wrapper button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Animations ──────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+
+  .messages-area {
+    padding: 16px 12px;
+  }
+
+  .message {
+    gap: 10px;
+  }
+
+  .message.assistant .message-content {
+    padding: 14px 16px;
+  }
+
+  .input-wrapper {
+    flex-direction: column;
+  }
+
+  .input-wrapper button {
+    width: 100%;
+  }
+}
+
+/* ── PDF Print-Friendly Override ─────────────────────────── */
+/* Applied temporarily to the element while html2pdf captures it */
+.pdf-printing {
+  background: #ffffff !important;
+  color: #000000 !important;
+  padding: 30px !important;
+  font-family: Georgia, 'Times New Roman', serif !important;
+}
+
+.pdf-printing * {
+  color: #000000 !important;
+  border-color: #cccccc !important;
+}
+
+.pdf-printing h1,
+.pdf-printing h2,
+.pdf-printing h3,
+.pdf-printing h4,
+.pdf-printing h5,
+.pdf-printing h6 {
+  color: #111111 !important;
+  border-bottom-color: #333333 !important;
+}
+
+.pdf-printing pre {
+  background: #f5f5f5 !important;
+  border: 1px solid #dddddd !important;
+  padding: 12px !important;
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
+}
+
+.pdf-printing code {
+  color: #333333 !important;
+  background: #f0f0f0 !important;
+}
+
+.pdf-printing blockquote {
+  border-left: 3px solid #666666 !important;
+  background: #f9f9f9 !important;
+  color: #333333 !important;
+}
+
+.pdf-printing th {
+  background: #f0f0f0 !important;
+  color: #000000 !important;
+  border: 1px solid #cccccc !important;
+}
+
+.pdf-printing td {
+  border: 1px solid #cccccc !important;
+  color: #000000 !important;
+}
+
+.pdf-printing a {
+  color: #1a0dab !important;
+}
+
+/* Prevent elements from being split across pages */
+.pdf-printing h1,
+.pdf-printing h2,
+.pdf-printing h3,
+.pdf-printing h4,
+.pdf-printing h5,
+.pdf-printing h6 {
+  page-break-after: avoid !important;
+  break-after: avoid !important;
+}
+
+.pdf-printing p,
+.pdf-printing li,
+.pdf-printing tr {
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
+}
+
+.pdf-printing pre,
+.pdf-printing blockquote,
+.pdf-printing table,
+.pdf-printing ul,
+.pdf-printing ol {
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
+}
+
+.pdf-printing h1,
+.pdf-printing h2,
+.pdf-printing h3 {
+  page-break-before: auto !important;
+  break-before: auto !important;
+  margin-top: 16px !important;
+  padding-top: 8px !important;
+}
+
+/* Keep headings with the content that follows */
+.pdf-printing h1 + *,
+.pdf-printing h2 + *,
+.pdf-printing h3 + *,
+.pdf-printing h4 + * {
+  page-break-before: avoid !important;
+  break-before: avoid !important;
+}

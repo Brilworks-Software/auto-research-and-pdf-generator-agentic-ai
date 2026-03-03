@@ -1,0 +1,28 @@
+{
+  "name": "ai-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "server": "node server.js",
+    "research": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "axios": "^1.13.5",
+    "cheerio": "^1.2.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "markdown-it": "^14.1.1",
+    "node-fetch": "^3.3.2",
+    "openai": "^6.17.0",
+    "pdf-parse": "^2.4.5",
+    "puppeteer": "^24.37.5"
+  }
+}
