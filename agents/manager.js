@@ -20,6 +20,21 @@ import { reportAgent } from "./specialists/reportAgent.js";
 
 // ── Step helpers ──────────────────────────────────────────────────────────────
 
+/**
+ * Clear cached models in all specialist agents to ensure fresh context
+ * and prevent context carryover between research phases
+ */
+function clearAllAgentCaches() {
+  webSearchAgent.clearCachedModel?.();
+  docReaderAgent.clearCachedModel?.();
+  researchAgent.clearCachedModel?.();
+  wikipediaAgent.clearCachedModel?.();
+  booksAgent.clearCachedModel?.();
+  dataCollectorAgent.clearCachedModel?.();
+  reportAgent.clearCachedModel?.();
+  console.log("  🧹 Cleared all agent caches for fresh context\n");
+}
+
 async function safeRun(agent, task) {
   try {
     console.log(`\n🔀 Manager → [${agent.name}]`);
@@ -99,6 +114,7 @@ export async function runManager(userQuery, onSourceUpdate = null) {
   console.log("\n" + "━".repeat(40));
   console.log("📌 PHASE 2: Multi-Source Research (4 agents in parallel)");
   console.log("━".repeat(40));
+  clearAllAgentCaches(); // CRITICAL: Clear all caches before starting fresh research
 
   // 2a — Web Search Agent
   const webTask = `Search the web for comprehensive information about: "${userQuery}"
@@ -212,6 +228,7 @@ Return: book titles, authors, publishers, descriptions, and key documentation co
   console.log("━".repeat(40));
   console.log("📌 PHASE 3: Data Collection & Organisation");
   console.log("━".repeat(40));
+  clearAllAgentCaches(); // CRITICAL: Clear caches before Phase 3
 
   const storeTask = `Store ALL the following research findings in the knowledge base. Create SEPARATE entries for each finding with appropriate tags.
 
@@ -249,6 +266,7 @@ Instructions:
   console.log("━".repeat(40));
   console.log("📌 PHASE 4: Comprehensive Report Generation");
   console.log("━".repeat(40));
+  clearAllAgentCaches(); // CRITICAL: Clear caches before Phase 4
 
   const reportTask = `Generate a comprehensive, in-depth research report on: "${userQuery}"
 

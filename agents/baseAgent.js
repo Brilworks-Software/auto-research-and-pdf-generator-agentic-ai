@@ -24,20 +24,29 @@ export class BaseAgent {
     this._model = null;
   }
 
-  async _ensureModel() {
-    if (!this._model) {
+  async _ensureModel(forceFresh = false) {
+    if (forceFresh || !this._model) {
       this._model = await getModel(this.toolDeclarations, { forceToolUse: true });
     }
     return this._model;
   }
 
   /**
+   * Clear the cached model to ensure fresh context for next run
+   */
+  clearCachedModel() {
+    this._model = null;
+  }
+
+  /**
    * Run the agent with a user message. Handles the full tool-call loop.
    * @param {string} userMessage
-   * @param {Array}  [history]  – optional prior chat turns
+   * @param {Array}  [history]  – optional prior chat turns (default: empty for fresh context)
    * @returns {Promise<string>}  final text response
    */
   async run(userMessage, history = []) {
+    // CRITICAL: Clear cached model to ensure NO context carryover from previous runs
+    this.clearCachedModel();
     const model = await this._ensureModel();
 
     const fullHistory = [
