@@ -1,0 +1,16 @@
+{
+  "buildCommand": "cd client && npm run build",
+  "outputDirectory": "client/dist",
+  "public": true,
+  "regions": ["iad1"],
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "nodejs20.x",
+      "memory": 3008,
+      "maxDuration": 300
+    }
+  },
+  "env": {
+    "GOOGLE_API_KEY": "AIzaSyDGh0rfQFxWR_XRkcbDxRxCXk3vNrboZkw"
+  }
+}
