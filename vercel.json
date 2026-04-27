@@ -1,16 +1,14 @@
 {
-  "buildCommand": "cd client && npm run build",
+  "framework": null,
+  "buildCommand": "cd client && npm install && npm run build",
+  "installCommand": "echo 'no root install'",
   "outputDirectory": "client/dist",
-  "public": true,
   "regions": ["iad1"],
-  "functions": {
-    "api/**/*.js": {
-      "runtime": "nodejs20.x",
-      "memory": 3008,
-      "maxDuration": 300
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
-  },
-  "env": {
-    "GOOGLE_API_KEY": "AIzaSyDGh0rfQFxWR_XRkcbDxRxCXk3vNrboZkw"
-  }
+  ]
 }

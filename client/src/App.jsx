@@ -2,9 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
+import { runManager } from "./agents/manager.js";
 import "./App.css";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 function App() {
   const [query, setQuery] = useState("");
@@ -40,81 +39,31 @@ function App() {
     setCompletedSources(new Set());
 
     try {
-      const res = await fetch(`${API_URL}/api/research`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: trimmed }),
-      });
-
-      // Handle streaming response
-      if (res.body) {
-        const reader = res.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = "";
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split("\n");
-          
-          for (let i = 0; i < lines.length - 1; i++) {
-            const line = lines[i].trim();
-            if (line.startsWith("data: ")) {
-              try {
-                const data = JSON.parse(line.slice(6));
-                
-                if (data.type === "source_active") {
-                  setActiveSources((prev) => ({
-                    ...prev,
-                    [data.source]: true,
-                  }));
-                } else if (data.type === "source_complete") {
-                  setActiveSources((prev) => {
-                    const newActives = { ...prev };
-                    delete newActives[data.source];
-                    return newActives;
-                  });
-                  setCompletedSources((prev) => new Set([...prev, data.source]));
-                } else if (data.type === "report") {
-                  setMessages((prev) => [
-                    ...prev,
-                    { role: "assistant", content: data.report },
-                  ]);
-                }
-              } catch (parseErr) {
-                console.error("Failed to parse stream data:", parseErr);
-              }
-            }
-          }
-          
-          buffer = lines[lines.length - 1];
+      // Run the research pipeline directly in the browser
+      const onSourceUpdate = (type, data) => {
+        if (type === "source_active") {
+          setActiveSources((prev) => ({ ...prev, [data.source]: true }));
+        } else if (type === "source_complete") {
+          setActiveSources((prev) => {
+            const next = { ...prev };
+            delete next[data.source];
+            return next;
+          });
+          setCompletedSources((prev) => new Set([...prev, data.source]));
         }
-      } else {
-        // Fallback for non-streaming response
-        const data = await res.json();
-        if (data.success) {
-          setMessages((prev) => [
-            ...prev,
-            { role: "assistant", content: data.report },
-          ]);
-        } else {
-          setMessages((prev) => [
-            ...prev,
-            {
-              role: "assistant",
-              content: `**Error:** ${data.error || "Something went wrong."}`,
-            },
-          ]);
-        }
-      }
+      };
+
+      const report = await runManager(trimmed, onSourceUpdate);
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: report },
+      ]);
     } catch (err) {
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: `**Connection Error:** ${err.message}\n\nMake sure the backend server is running on port 3001.`,
+          content: `**Error:** ${err.message}`,
         },
       ]);
     } finally {
@@ -123,8 +72,7 @@ function App() {
     }
   };
 
-  const handleDownloadPDF = async (markdownContent, topic) => {
-    // Sanitize topic for use as filename
+  const handleDownloadPDF = (markdownContent, topic) => {
     const stopWords = ["what", "is", "are", "the", "a", "an", "of", "and", "or", "in", "on", "for", "to", "how", "why", "where", "when", "which", "do", "does", "did", "its", "it", "this", "that"];
     const safeName = (topic || "research_report")
       .toLowerCase()
@@ -134,38 +82,46 @@ function App() {
       .join("_")
       .substring(0, 100) || "research_report";
 
-    try {
-      const res = await fetch(`${API_URL}/api/pdf`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ markdown: markdownContent, filename: safeName }),
-      });
-
-      if (!res.ok) {
-        const text = await res.text();
-        let errorMsg = "PDF generation failed";
-        try {
-          const errData = JSON.parse(text);
-          errorMsg = errData.error || errorMsg;
-        } catch {
-          errorMsg = text.substring(0, 200) || errorMsg;
-        }
-        throw new Error(errorMsg);
-      }
-
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${safeName}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error("PDF download error:", err);
-      alert(`PDF download failed: ${err.message}`);
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      alert("Please allow popups to download PDF.");
+      return;
     }
+
+    // Convert basic markdown to HTML for printing
+    const htmlBody = markdownContent
+      .replace(/^#{1}\s+(.+)$/gm, "<h1>$1</h1>")
+      .replace(/^#{2}\s+(.+)$/gm, "<h2>$1</h2>")
+      .replace(/^#{3}\s+(.+)$/gm, "<h3>$1</h3>")
+      .replace(/^#{4}\s+(.+)$/gm, "<h4>$1</h4>")
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/\*(.+?)\*/g, "<em>$1</em>")
+      .replace(/`([^`]+)`/g, "<code>$1</code>")
+      .replace(/^-\s+(.+)$/gm, "<li>$1</li>")
+      .replace(/\n\n/g, "</p><p>")
+      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>');
+
+    printWindow.document.write(`<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>${topic || "Research Report"}</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; line-height: 1.7; color: #1a1a2e; max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+    h1 { font-size: 26px; border-bottom: 2px solid #6366f1; padding-bottom: 8px; color: #1a1a2e; }
+    h2 { font-size: 20px; color: #2d2d5e; margin-top: 28px; }
+    h3 { font-size: 16px; color: #3d3d7e; }
+    code { background: #f0f0f5; padding: 2px 5px; border-radius: 3px; font-size: 13px; }
+    li { margin: 4px 0; }
+    a { color: #6366f1; }
+    @media print { body { padding: 20px; } }
+  </style>
+</head>
+<body><p>${htmlBody}</p></body>
+</html>`);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => { printWindow.print(); }, 500);
   };
 
   const handleCopy = (content) => {

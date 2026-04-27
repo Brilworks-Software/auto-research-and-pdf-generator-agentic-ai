@@ -7,6 +7,7 @@
     "start": "node index.js",
     "server": "node server.js",
     "research": "node index.js",
+    "build": "cd client && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

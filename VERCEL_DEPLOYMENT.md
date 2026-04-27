@@ -25,8 +25,7 @@ git push -u origin main
 2. Select your GitHub repository
 3. Vercel auto-detects settings from `vercel.json`
 4. Add environment variables:
-   - `GOOGLE_API_KEY`: Your Google API key
-   - `OPENAI_API_KEY`: Your OpenAI key (if needed)
+   - `GOOGLE_API_KEY`: Your Gemini API key
 5. Click "Deploy"
 
 **Option B: Via CLI**
@@ -76,7 +75,7 @@ curl https://yourdomain.vercel.app/api/health
 |----------|-----|------------|
 | `VITE_API_URL` | `http://localhost:3001` | `/api` |
 | `GOOGLE_API_KEY` | `.env.local` | Vercel secrets |
-| `OPENAI_API_KEY` | `.env.local` | Vercel secrets |
+
 ## Local Development
 
 ```bash
@@ -94,8 +93,9 @@ npm run dev
 
 ## Important Notes
 
-⚠️ **Serverless Limitations:**
-- Functions timeout after 300 seconds (5 minutes on Pro plan)
+⚠️ **Serverless Limitations (Hobby Plan):**
+- Memory limited to 2048 MB
+- Functions timeout after 60 seconds
 - Puppeteer may have issues in serverless (consider web scraping APIs instead)
 - Large file uploads are limited
 
@@ -116,9 +116,10 @@ npm run dev
 - Files in `/api` must be ES modules
 - Function names must match routes: `api/research.js` → `/api/research`
 
-**Slow cold starts?**
-- Increase function memory in `vercel.json` (current: 3008MB)
-- Consider breaking large agents into smaller functions
+**Function too large or slow?**
+- Optimize code to reduce bundle size
+- Consider breaking large agents into separate smaller functions
+- Profile with Vercel Analytics
 
 **Environment variables not loading?**
 - Redeploy after adding secrets
